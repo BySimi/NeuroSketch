@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>About Us - Our Team</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #333;
+            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.6) 0.8px, rgba(255, 255, 255, 0) 1px); /* Smaller and semi-transparent dots */
+            background-size: 15px 15px;
+        }
+
+        /* Navigation Bar */
+        nav {
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }        
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+        }        
+
+        nav ul li {
+            margin-right: 20px;
+        }        
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }        
+
+        nav ul li a:hover {
+            color: #ffa500;
+        }        
+
+        nav .logo img {
+            width: 50px;
+            height: auto;
+        }        
+
+        /* Import TAN Heading and Daydreamer Fonts 
+        @font-face {
+            font-family: 'TAN Heading';
+            src: url('fonts/TAN-Heading.ttf') format('truetype');
+        }        
+
+        @font-face {
+            font-family: 'Daydreamer';
+            src: url('fonts/Daydreamer.ttf') format('truetype');
+        }        
+*/
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #000;
+        }
+
+        .description {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .team {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .intro{
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-member {
+            background-color: white;
+            
+            padding: 20px;
+            margin: 20px;
+            width: 250px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-member img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 5px solid #f4f4f4;
+        }
+
+        .team-member h3 {
+            margin-bottom: 10px;
+            color: #000;
+            font-size: 1.2rem;
+        }
+
+        .team-member p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .team-member a {
+            color: #2ecc71;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .team-member a:hover {
+            text-decoration: underline;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        header h1 {
+            color: #4A90E2;
+        }
+
+        section {
+            margin: 20px 0;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .intro, .mission-vision, .story, .team, .future-plans, .get-involved {
+            padding: 20px;
+            background-color: white;
+            
+        }
+
+        .section-wrapper {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        
+        .section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 40%;
+            padding: 20px;
+            margin: 20px;
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+        
+        .section:hover {
+            transform: translateY(-10px);
+        }
+        
+        .section h2 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .section p {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .section img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 20px;
+        }
+        
+        /* Icons */
+        .icon-mission img, .icon-vision img {
+            display: block;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 768px) {
+            .section {
+                width: 100%;
+            }
+        }
+        
+      
+        /*blockquote {
+            font-style: italic;
+            border-left: 4px solid #2ecc71;
+            margin: 20px 0;
+            padding-left: 15px;
+            color: #666;
+        }*/
+
+        .story-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 40px 0;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .story-text {
+            width: 55%;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .story-text h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .story-text p {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        /* Attention-grabbing quote style */
+        .quote {
+            font-style: italic;
+            color: #fff;
+    background-color: rgba(46, 204, 113, 0.9); /* Semi-transparent green background */
+    padding: 20px;
+    border-radius: 10px;
+            position: relative;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            line-height: 1.5;
+            z-index: 3;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            /*left: 0px;  Move it towards the image for overlap */
+        }
+        
+        .quote::before {
+            content: '“';
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.7);
+            position: absolute;
+            left: 10px;
+            top: -15px;
+        }
+        
+        .story-image {
+            width: 40%;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .story-image img {
+            width: 82%; /* Shrink image a bit for a better layout */
+            height: auto;
+            object-fit: cover;
+            position: relative;
+            z-index: 0;
+            opacity: 0.9;
+            border-radius: 10px; /* Adds rounded corners */
+        }
+        
+        /* Responsive styles */
+@media (max-width: 768px) {
+    .story-container {
+        flex-direction: column;
+        padding: 20px;
+    }
+    
+    .story-text, .story-image {
+        width: 100%;
+        position: relative;
+    }
+
+    .story-image img {
+                position: relative;
+                right: 0;
+            }
+        
+            .quote {
+                left: 0;
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .story-container {
+                flex-direction: column;
+                padding: 20px;
+            }
+            
+            .story-text, .story-image {
+                width: 100%;
+                position: relative;
+            }        
+
+            .story-image img {
+                position: relative;
+                right: 0;
+            }
+        }
+
+        .plans-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 50px;
+            position: relative;
+            overflow: hidden;
+            
+        }
+        
+        .plans-section img {
+            width: 200px;
+            border-radius: 10px;
+        }
+        
+        .plans-section-content {
+            flex: 1;
+            margin-left: 30px;
+        }
+        
+        .plans-section-content h2 {
+            font-size: 2em;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        
+        .plans-section-content p {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .get-involved-section {
+            text-align: center;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 50px;
+        }
+        
+        .get-involved-section h2 {
+            font-size: 2em;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        
+        .get-involved-section p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .icon {
+            display: inline-block;
+            margin-right: 10px;
+            font-size: 2em;
+            color: #28a745;
+        }
+        
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        footer p {
+            margin: 5px 0;
+        }
+        
+        .google-form {
+            margin-top: 20px;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .plans-section {
+                flex-direction: column;
+                text-align: center;
+            }
+        
+            .plans-section img {
+                margin-bottom: 20px;
+                width: 100%;
+            }
+        
+            .plans-section-content {
+                margin-left: 0;
+            }
+        }
+        
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <img src="logo.png" alt="Neurosketch Logo">
+        </div>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#diagnosis">Diagnosis</a></li>
+            <li><a href="Research.html">Research</a></li>
+            <li><a href="AboutUS.html">About Us</a></li>
+        </ul>
+    </nav>
+    <br><br><br><br>
+
+    <div class="container">
+        <div class="intro">
+            <h1 align="center">Introduction to Neurosketch</h1>
+            <p>
+                At Neurosketch, we are transforming the way Parkinson's disease is detected. By combining artificial intelligence with medical expertise, 
+                we offer a cutting-edge, accessible tool that allows individuals to get an early and accurate diagnosis right from home. 
+                Our mission is to empower people with the knowledge they need to take control of their health and seek timely medical intervention.
+            </p>
+        </div>
+
+        <br><br><br>
+    
+        <div class="section-wrapper">
+            <!-- Mission Section -->
+            <div class="section">
+                <div class="icon-mission">
+                    <img src="Images/mission.png" alt="Mission Icon">
+                </div>
+                <h2>Our Mission</h2>
+                <p>
+                    Our mission is to revolutionize Parkinson's disease detection through AI, making early diagnosis accessible to everyone, anywhere in the world.
+                </p>
+            </div>
+        
+            <!-- Vision Section -->
+            <div class="section">
+                <div class="icon-vision">
+                    <img src="Images/vision.png" alt="Vision Icon">
+                </div>
+                <h2>Our Vision</h2>
+                <p>
+                    Our vision is a world where neurodegenerative diseases are diagnosed early, improving outcomes for millions through AI-powered solutions.
+                </p>
+            </div>
+        </div>
+        
+    
+        <div class="story-container">
+            <div class="story-text">
+                <h1>Our Story</h1>
+                <p>At Neurosketch, our mission is deeply personal. The inspiration behind this project stems from witnessing a loved one struggle with Parkinson's disease.</p>
+                <div class="quote" align="center">
+                    "My grandfather was a strong, vibrant man, but when he started showing signs of Parkinson's, it took far too long for a proper diagnosis. The uncertainty and the delay in treatment weighed heavily on our family, and I often wondered if there was a way to detect the disease earlier. It was in those moments of helplessness that the idea for Neurosketch was born. I didn’t want other families to go through the same pain of not knowing."
+                </div>
+                <p>Neurosketch was created with the goal of providing individuals with a powerful tool to detect Parkinson's disease early—before symptoms become overwhelming. By harnessing the power of artificial intelligence, we aim to give people the knowledge and peace of mind they need to take control of their health sooner. This project is not just about technology; it’s about bringing hope to those who need it the most, inspired by a journey that began in our own family.</p>
+            </div>
+            
+            <div class="story-image">
+                <img src="images/story.jpeg" alt="Neurosketch Story Image">
+            </div>
+        </div>
+        
+    
+        <div class="team">
+            <h1 align="center">Our Team</h1>
+              
+            <div class="team">
+    
+                <!-- Team Member 1 -->
+                <div class="team-member">
+                    <img src="images/gursimar.jpg" alt="Gursimar Kaur">
+                    <h3>Gursimar Kaur</h3>
+                    <!--<a href="#">Lorem ipsum</a>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna.</p>-->
+                </div>
+    
+                <!-- Team Member 2 -->
+                <div class="team-member">
+                    <img src="images/nauman.jpg" alt="Mohd. Naumna Ali">
+                    <h3>Mohd. Naumna Ali</h3>
+                    <!--<a href="#">Lorem ipsum</a>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna.</p>-->                
+                </div>
+      
+                <!-- Team Member 3 -->
+                <div class="team-member">
+                    <img src="images/Prajesh.jpg" alt="Prajesh Neir">
+                    <h3>Prajesh Neir</h3>
+                <!--    <a href="#">Lorem ipsum</a>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna.</p>-->
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <br><br>
+    
+        <!-- Our Future Plans Section -->
+<div class="plans-section">
+    <img src="images/future_plan.png" alt="Future Plans Image">
+    <div class="plans-section-content">
+        <h2><i class="fas fa-lightbulb icon"></i> Our Future Plans</h2>
+        <p>In the future, we plan to enhance our diagnostic tools, explore new ways to monitor neurodegenerative diseases, and expand our platform to offer services for other neurological conditions.</p>
+    </div>
+</div>
+
+<!-- Get Involved Section -->
+<div class="get-involved-section">
+    <h2><i class="fas fa-hands-helping icon"></i> Get Involved</h2>
+    <p>We welcome healthcare professionals, researchers, and tech enthusiasts to join us in our mission. Whether you want to collaborate, contribute to our research, or share your thoughts, we’d love to hear from you.</p>
+    
+    <!-- Embed Google Form -->
+    <div class="google-form">
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdXkfGpiSxGHM5O6Pc9Y_sAh5yB-P8XdHrC1kCMK9RgF7dJA/viewform?embedded=true" width="100%" height="800px" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+    </div>
+</div>
+
+    </div>
+    
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2024 Neurosketch. All rights reserved.</p>
+            <p>Contact: 987654321</p>
+            <p>Follow us on Instagram: <a href="https://www.instagram.com/your_instagram_handle" target="_blank" style="color:white;">@your_instagram_handle</a></p>
+        </footer>
+
+</body>
+</html>

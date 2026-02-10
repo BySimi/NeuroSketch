@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroSketch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #canvas {
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>NeuroSketch</h1>
+    <p>Draw a spiral on the canvas or upload an image to detect Parkinson's Disease.</p>
+
+    <!-- Canvas for Drawing -->
+    <canvas id="canvas" width="345" height="345"></canvas>
+    <br>
+    <button id="clearCanvas">Clear Canvas</button>
+    <button id="submitCanvas">Submit Canvas</button>
+    <br><br>
+
+    <!-- Form for uploading images -->
+    <form method="POST" enctype="multipart/form-data" action="/" id="uploadForm">
+        <label for="file">Upload an image (png, jpg):</label>
+        <input type="file" id="file" name="file" accept="image/png, image/jpeg">
+        <button type="submit">Submit Image</button>
+    </form>
+
+    <!-- Display the result -->
+    {% if result %}
+        <h3>Prediction Result:</h3>
+        <p>{{ result }}</p>
+    {% endif %}
+
+    <!-- Script to handle drawing on the canvas and submitting the image -->
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let painting = false;
+
+        function startPosition(e) {
+            painting = true;
+            draw(e);
+        }
+
+        function endPosition() {
+            painting = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!painting) return;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = 'black';
+
+            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        }
+
+        // Event Listeners for mouse actions
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+
+        // Clear canvas button
+        document.getElementById('clearCanvas').addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        // Submit Canvas button
+        document.getElementById('submitCanvas').addEventListener('click', () => {
+            const dataURL = canvas.toDataURL();  // Convert canvas to image data
+            const formData = new FormData();
+            formData.append("canvasImage", dataURL);
+
+            // Send canvas image data to server using AJAX
+            fetch("/submit_canvas", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Prediction: " + data.result);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    </script>
+
+</body>
+</html>
