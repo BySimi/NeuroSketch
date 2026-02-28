@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroSketch — Early Detection for Elderly Wellness</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e; --deep: #16213e; --navy: #2d3561; --indigo: #4a5568;
+    --steel: #6b7a99; --lavender: #b8c5e8; --mist: #dce6f7; --cream: #f4f6fc;
+    --white: #ffffff; --teal: #00b4d8; --teal-light: #90e0ef;
+    --coral: #e76f51; --gold: #f4a261; --green: #52b788;
+    --card-bg: rgba(255,255,255,0.85);
+    /* Semantic tokens */
+    --bg-body: #f4f6fc; --bg-card: #ffffff; --bg-section-alt: #f0f4fb;
+    --bg-testimonials: #e8f4f8;
+    --text-primary: #1a1a2e; --text-secondary: #4a5568; --text-muted: #6b7a99;
+    --border-color: #dce6f7;
+    --nav-bg: rgba(244,246,252,0.85); --nav-bg-solid: rgba(244,246,252,0.97);
+    --toggle-bg: #dce6f7; --shadow-color: rgba(45,53,97,0.08);
+  }
+  [data-theme="dark"] {
+    --ink: #e2e8f8; --deep: #0a0e1a; --navy: #7eb8f7; --indigo: #a0aec0;
+    --steel: #6b7a99; --lavender: #2a3556; --mist: #1a2238; --cream: #0f1221;
+    --white: #192035; --teal: #00d4f5; --teal-light: #67d8ef;
+    --coral: #ff7a5c; --gold: #ffb84d; --green: #56d68a;
+    --card-bg: rgba(25,32,53,0.9);
+    --bg-body: #0f1221; --bg-card: #192035; --bg-section-alt: #131929;
+    --bg-testimonials: #111827;
+    --text-primary: #e2e8f8; --text-secondary: #a0aec0; --text-muted: #6b7a99;
+    --border-color: #1e2a45;
+    --nav-bg: rgba(11,14,26,0.85); --nav-bg-solid: rgba(11,14,26,0.98);
+    --toggle-bg: #1a2238; --shadow-color: rgba(0,0,0,0.3);
+  }
+  /* ─── THEME TOGGLE ─────────────────────────────── */
+  .theme-toggle {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--toggle-bg); border: 2px solid var(--border-color);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; transition: all 0.3s; position: relative; overflow: hidden;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { transform: scale(1.12) rotate(15deg); border-color: var(--teal); }
+  .toggle-icon { position: absolute; transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  .icon-moon { opacity: 1; transform: translateY(0) rotate(0deg); }
+  .icon-sun  { opacity: 0; transform: translateY(20px) rotate(90deg); }
+  [data-theme="dark"] .icon-moon { opacity: 0; transform: translateY(-20px) rotate(-90deg); }
+  [data-theme="dark"] .icon-sun  { opacity: 1; transform: translateY(0) rotate(0deg); }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-body);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+
+  /* ─── NAV ─────────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 100;
+    padding: 1.2rem 4rem;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--nav-bg);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(180,197,232,0.3);
+    transition: background 0.3s;
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem;
+    color: var(--navy); letter-spacing: -0.03em;
+  }
+  .nav-logo span { color: var(--teal); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.9rem; font-weight: 500; letter-spacing: 0.02em;
+    color: var(--steel); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--navy); }
+  .nav-cta {
+    background: var(--navy); color: var(--white);
+    padding: 0.6rem 1.4rem; border-radius: 100px;
+    font-size: 0.875rem; font-weight: 600;
+    text-decoration: none; transition: background 0.2s, transform 0.2s;
+  }
+  .nav-cta:hover { background: var(--teal); transform: translateY(-1px); }
+
+  /* ─── HERO ─────────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 8rem 2rem 5rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(0,180,216,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(45,53,97,0.08) 0%, transparent 70%);
+  }
+  .hero-blob {
+    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.18; z-index: 0;
+  }
+  .blob1 { width: 500px; height: 500px; background: var(--teal); top: -100px; left: -150px; }
+  .blob2 { width: 400px; height: 400px; background: var(--navy); bottom: 0; right: -100px; }
+  .blob3 { width: 300px; height: 300px; background: var(--gold); top: 40%; left: 60%; }
+
+  .hero-badge {
+    position: relative; z-index: 1;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--mist); border: 1px solid var(--lavender);
+    padding: 0.4rem 1rem; border-radius: 100px;
+    font-size: 0.8rem; font-weight: 500; color: var(--navy);
+    margin-bottom: 2rem;
+    animation: fadeUp 0.8s ease both;
+  }
+  .badge-dot { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+
+  .hero h1 {
+    position: relative; z-index: 1;
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(3rem, 7vw, 6rem);
+    line-height: 1.05; letter-spacing: -0.04em;
+    color: var(--ink);
+    animation: fadeUp 0.9s 0.1s ease both;
+  }
+  .hero h1 .accent { color: var(--teal); }
+  .hero h1 .underline-wave { position: relative; display: inline-block; }
+  .hero h1 .underline-wave::after {
+    content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 4px;
+    background: var(--gold); border-radius: 2px;
+  }
+
+  .hero-sub {
+    position: relative; z-index: 1;
+    max-width: 560px; margin: 1.5rem auto 0;
+    font-size: 1.15rem; font-weight: 300; line-height: 1.7;
+    color: var(--text-secondary);
+    animation: fadeUp 1s 0.2s ease both;
+  }
+
+  .hero-actions {
+    position: relative; z-index: 1;
+    display: flex; gap: 1rem; margin-top: 2.5rem; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 1s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--navy); color: var(--white);
+    padding: 0.85rem 2rem; border-radius: 100px;
+    font-size: 0.95rem; font-weight: 600;
+    text-decoration: none; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .btn-primary:hover { background: var(--teal); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,180,216,0.3); }
+  .btn-outline {
+    background: transparent; color: var(--navy);
+    padding: 0.85rem 2rem; border-radius: 100px;
+    font-size: 0.95rem; font-weight: 600;
+    text-decoration: none; border: 2px solid var(--lavender);
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--navy); background: var(--mist); }
+
+  .hero-stats {
+    position: relative; z-index: 1;
+    display: flex; gap: 3rem; margin-top: 4rem; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 1s 0.4s ease both;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat .num {
+    font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800;
+    color: var(--navy); display: block; line-height: 1;
+  }
+  .hero-stat .label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem; max-width: 120px; }
+
+  .hero-scroll {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+    animation: fadeUp 1s 0.6s ease both;
+  }
+  .scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--steel), transparent); animation: scrollLine 2s infinite; }
+  @keyframes scrollLine { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── SECTIONS COMMON ─────────────────────────── */
+  section { padding: 6rem 2rem; transition: background 0.4s ease; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 1rem;
+  }
+  .section-label::before { content: ''; width: 24px; height: 2px; background: var(--teal); }
+  h2.section-title {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1; letter-spacing: -0.03em;
+    color: var(--ink); margin-bottom: 1rem;
+  }
+  .section-desc { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.75; max-width: 580px; }
+
+  /* ─── PROBLEM ─────────────────────────────────── */
+  #problem { background: var(--ink); color: var(--white); }
+  #problem .section-label { color: var(--teal-light); }
+  #problem .section-label::before { background: var(--teal-light); }
+  #problem h2 { color: var(--white); }
+  #problem .section-desc { color: var(--lavender); }
+
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+    margin-top: 3.5rem;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px; padding: 2rem;
+    transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(0,180,216,0.08), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .stat-card:hover { transform: translateY(-4px); border-color: rgba(0,180,216,0.3); }
+  .stat-card:hover::before { opacity: 1; }
+  .stat-card .icon { font-size: 2rem; margin-bottom: 1rem; }
+  .stat-card .big-num {
+    font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800;
+    color: var(--teal); line-height: 1;
+  }
+  .stat-card .stat-label { color: var(--lavender); font-size: 0.9rem; margin-top: 0.5rem; line-height: 1.5; }
+  .stat-card .stat-source { color: var(--steel); font-size: 0.7rem; margin-top: 0.75rem; }
+
+  .challenges-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;
+    margin-top: 3rem;
+  }
+  .challenge-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 1.75rem;
+    display: flex; gap: 1rem; align-items: flex-start;
+    transition: all 0.3s;
+  }
+  .challenge-card:hover { background: rgba(255,255,255,0.07); transform: translateX(4px); }
+  .challenge-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: rgba(0,180,216,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; flex-shrink: 0;
+  }
+  .challenge-card h3 { font-size: 1rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; }
+  .challenge-card p { font-size: 0.875rem; color: var(--lavender); line-height: 1.6; }
+
+  /* ─── HOW IT WORKS ─────────────────────────────── */
+  #solution { background: var(--bg-body); }
+
+  .solution-intro {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+    align-items: center; margin-bottom: 5rem;
+  }
+  .solution-quote {
+    font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 600;
+    line-height: 1.4; color: var(--text-primary);
+    border-left: 3px solid var(--teal); padding-left: 1.5rem;
+  }
+
+  .modules-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+  }
+  .module-card {
+    background: var(--bg-card);
+    border-radius: 24px; padding: 2.5rem 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 24px var(--shadow-color);
+    transition: all 0.35s;
+    position: relative; overflow: hidden;
+  }
+  .module-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    background: var(--teal); transform: scaleX(0); transition: transform 0.3s;
+  }
+  .module-card:hover { transform: translateY(-8px); box-shadow: 0 16px 48px rgba(45,53,97,0.12); }
+  .module-card:hover::after { transform: scaleX(1); }
+
+  .module-num {
+    font-family: 'Syne', sans-serif; font-size: 4rem; font-weight: 800;
+    color: var(--border-color); line-height: 1; margin-bottom: 0.5rem;
+  }
+  .module-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .module-card h3 {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.25rem;
+    color: var(--text-primary); margin-bottom: 0.75rem;
+  }
+  .module-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.65; }
+  .module-progress {
+    margin-top: 1.5rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .progress-bar { flex: 1; height: 6px; background: var(--mist); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; background: var(--teal); }
+  .progress-label { font-size: 0.75rem; font-weight: 600; color: var(--navy); white-space: nowrap; }
+  .module-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+  .tag {
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;
+    padding: 0.25rem 0.65rem; border-radius: 100px;
+    background: var(--border-color); color: var(--text-primary);
+  }
+
+  /* ─── HOW IT WORKS PIPELINE ────────────────────── */
+  #pipeline { background: var(--bg-section-alt); }
+  .pipeline-tabs {
+    display: flex; gap: 0.5rem; margin-bottom: 3rem; flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 0.6rem 1.4rem; border-radius: 100px;
+    border: 2px solid var(--mist); background: transparent;
+    font-size: 0.875rem; font-weight: 600; color: var(--steel);
+    cursor: pointer; transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab-btn.active, .tab-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+  .pipeline-content { display: none; }
+  .pipeline-content.active { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+
+  .pipeline-steps { display: flex; flex-direction: column; gap: 1.25rem; }
+  .pipeline-step {
+    display: flex; gap: 1rem; align-items: flex-start;
+    padding: 1.25rem; border-radius: 16px;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    transition: all 0.2s;
+  }
+  .pipeline-step:hover { border-color: var(--teal); transform: translateX(4px); }
+  .step-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--navy); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 700; flex-shrink: 0;
+  }
+  .pipeline-step h4 { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); }
+  .pipeline-step p { font-size: 0.825rem; color: var(--text-secondary); margin-top: 0.2rem; line-height: 1.5; }
+
+  .pipeline-visual {
+    background: var(--ink);
+    border-radius: 24px; padding: 2rem;
+    color: var(--white); min-height: 300px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    position: relative; overflow: hidden;
+  }
+  .pipeline-visual::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 30%, rgba(0,180,216,0.2), transparent 60%);
+  }
+  .vis-label { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal-light); margin-bottom: 1rem; }
+  .vis-result {
+    font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700;
+    text-align: center; position: relative; z-index: 1;
+  }
+  .confidence-bar { width: 100%; margin-top: 1.5rem; position: relative; z-index: 1; }
+  .conf-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
+  .conf-label { font-size: 0.8rem; color: var(--lavender); width: 80px; }
+  .conf-track { flex: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+  .conf-fill { height: 100%; border-radius: 4px; transition: width 1.5s ease; }
+  .conf-fill.healthy { background: var(--green); }
+  .conf-fill.parkinson { background: var(--coral); }
+  .conf-pct { font-size: 0.8rem; font-weight: 700; color: var(--white); width: 36px; text-align: right; }
+
+  /* ─── CREDIBILITY ─────────────────────────────── */
+  #credibility { background: var(--bg-card); }
+  .cred-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; }
+  .cred-block h3 {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem;
+    color: var(--text-primary); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .tech-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .tech-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.9rem 1.25rem; border-radius: 12px;
+    background: var(--bg-section-alt); border: 1px solid var(--border-color);
+    font-size: 0.875rem;
+  }
+  .tech-item .name { font-weight: 600; color: var(--navy); }
+  .tech-item .detail { color: var(--text-muted); font-size: 0.8rem; }
+  .tech-badge {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
+    padding: 0.2rem 0.6rem; border-radius: 100px;
+    background: var(--mist); color: var(--teal);
+  }
+
+  .accuracy-display {
+    background: var(--ink); border-radius: 20px; padding: 2rem;
+    text-align: center; color: var(--white);
+  }
+  .acc-number {
+    font-family: 'Syne', sans-serif; font-size: 4.5rem; font-weight: 800;
+    color: var(--teal); line-height: 1;
+  }
+  .acc-label { color: var(--lavender); font-size: 0.9rem; margin-top: 0.5rem; }
+  .acc-sub { color: var(--steel); font-size: 0.8rem; margin-top: 0.4rem; }
+
+  .symptoms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem; }
+  .symptom-pill {
+    padding: 0.5rem 0.75rem; border-radius: 8px;
+    background: var(--bg-section-alt); border: 1px solid var(--border-color);
+    font-size: 0.78rem; color: var(--text-secondary);
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .symptom-pill::before { content: '○'; color: var(--teal); font-size: 0.6rem; }
+
+  /* ─── ROADMAP ──────────────────────────────────── */
+  #roadmap { background: var(--bg-body); }
+  .phases { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-top: 3rem; position: relative; }
+  .phases::before {
+    content: ''; position: absolute; top: 2.5rem; left: 5%; right: 5%;
+    height: 2px; background: linear-gradient(to right, var(--teal), var(--navy));
+    z-index: 0;
+  }
+  .phase {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    position: relative; z-index: 1;
+  }
+  .phase-dot {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--bg-card); border: 3px solid var(--lavender);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; margin-bottom: 1rem; transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(45,53,97,0.1);
+  }
+  .phase:hover .phase-dot { border-color: var(--teal); transform: scale(1.15); }
+  .phase-weeks { font-size: 0.7rem; font-weight: 600; color: var(--teal); letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+  .phase h4 { font-family: 'Syne', sans-serif; font-size: 0.875rem; font-weight: 700; color: var(--navy); margin-bottom: 0.4rem; }
+  .phase p { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+
+  .next-milestones {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+    margin-top: 3rem;
+  }
+  .milestone {
+    background: var(--bg-card); border-radius: 16px; padding: 1.5rem;
+    border: 1px solid var(--border-color); transition: all 0.3s;
+  }
+  .milestone:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(45,53,97,0.08); }
+  .milestone .ms-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+  .milestone h4 { font-weight: 700; font-size: 0.9rem; color: var(--navy); margin-bottom: 0.4rem; }
+  .milestone p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+  /* ─── TEAM / MENTORSHIP ───────────────────────── */
+  #mentorship { background: var(--navy); color: var(--white); }
+  #mentorship h2 { color: var(--white); }
+  #mentorship .section-label { color: var(--teal-light); }
+  #mentorship .section-label::before { background: var(--teal-light); }
+  #mentorship .section-desc { color: var(--lavender); }
+
+  .gaps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+  .gap-card {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 2rem;
+  }
+  .gap-card h3 { font-weight: 700; font-size: 1.1rem; color: var(--teal-light); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+  .gap-item {
+    display: flex; gap: 0.75rem; align-items: flex-start;
+    margin-bottom: 0.9rem; padding-bottom: 0.9rem;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .gap-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .gap-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); margin-top: 6px; flex-shrink: 0; }
+  .gap-item p { font-size: 0.875rem; color: var(--lavender); line-height: 1.55; }
+
+  /* ─── TESTIMONIALS ────────────────────────────── */
+  #testimonials { background: var(--bg-testimonials); }
+  #testimonials h2 { text-align: center; margin-bottom: 0.5rem; }
+  #testimonials .section-label { justify-content: center; }
+
+  .testimonials-track-wrapper {
+    overflow: hidden; margin-top: 3rem;
+    -webkit-mask: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    mask: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  }
+  .testimonials-track {
+    display: flex; gap: 1.5rem;
+    animation: scrollTrack 28s linear infinite;
+    width: max-content;
+  }
+  .testimonials-track:hover { animation-play-state: paused; }
+  @keyframes scrollTrack {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .testimonial-card {
+    background: var(--bg-card);
+    border-radius: 20px; padding: 2rem 1.75rem;
+    width: 280px; flex-shrink: 0;
+    border: 1px solid rgba(0,180,216,0.1);
+    box-shadow: 0 4px 20px rgba(45,53,97,0.06);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex; flex-direction: column; gap: 1.25rem;
+  }
+  .testimonial-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(45,53,97,0.12); }
+  .tcard-quote {
+    font-size: 0.95rem; font-style: italic; line-height: 1.65;
+    color: var(--text-primary);
+    position: relative; padding-top: 1.5rem;
+  }
+  .tcard-quote::before {
+    content: '"'; position: absolute; top: -0.25rem; left: 0;
+    font-size: 3.5rem; color: var(--teal); opacity: 0.25;
+    font-family: 'Syne', sans-serif; line-height: 1;
+  }
+  .tcard-author {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding-top: 1rem; border-top: 1px solid var(--mist);
+  }
+  .author-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--teal), var(--navy));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700; color: var(--white);
+    flex-shrink: 0;
+  }
+  .author-name { font-weight: 700; font-size: 0.875rem; color: var(--text-primary); }
+  .author-role { font-size: 0.75rem; color: var(--text-muted); }
+
+  .feedback-cta {
+    text-align: center; margin-top: 2.5rem;
+    font-size: 0.95rem; color: var(--text-secondary);
+  }
+  .feedback-cta a {
+    color: var(--teal); font-weight: 700; text-decoration: none;
+    border-bottom: 2px solid var(--teal); padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .feedback-cta a:hover { color: var(--navy); border-color: var(--navy); }
+
+  /* ─── CTA ─────────────────────────────────────── */
+  #cta {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--deep) 100%);
+    text-align: center; padding: 7rem 2rem;
+    position: relative; overflow: hidden;
+  }
+  #cta::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,180,216,0.2), transparent 60%);
+  }
+  #cta h2 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2.5rem, 5vw, 4rem); color: var(--white); position: relative; z-index: 1; }
+  #cta p { color: var(--lavender); font-size: 1.1rem; margin: 1.25rem auto; max-width: 500px; position: relative; z-index: 1; }
+  #cta .cta-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; position: relative; z-index: 1; }
+  .cta-link {
+    padding: 0.75rem 1.5rem; border-radius: 100px;
+    font-size: 0.875rem; font-weight: 600; text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .cta-link.primary { background: var(--teal); color: var(--ink); }
+  .cta-link.primary:hover { background: var(--teal-light); transform: translateY(-2px); }
+  .cta-link.secondary { background: rgba(255,255,255,0.1); color: var(--white); border: 1px solid rgba(255,255,255,0.2); }
+  .cta-link.secondary:hover { background: rgba(255,255,255,0.2); }
+
+  /* ─── FOOTER ──────────────────────────────────── */
+  footer {
+    background: var(--ink); padding: 2.5rem 4rem;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .footer-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; color: var(--white); }
+  .footer-logo span { color: var(--teal); }
+  footer p { color: var(--steel); font-size: 0.8rem; }
+  .footer-links { display: flex; gap: 1.5rem; }
+  .footer-links a { color: var(--text-muted); font-size: 0.8rem; text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--teal); }
+
+  /* ─── SCROLL ANIMATIONS ──────────────────────── */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── RESPONSIVE ──────────────────────────────── */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .challenges-grid { grid-template-columns: 1fr; }
+    .solution-intro { grid-template-columns: 1fr; gap: 2rem; }
+    .modules-grid { grid-template-columns: 1fr; }
+    .pipeline-content.active { grid-template-columns: 1fr; }
+    .cred-grid { grid-template-columns: 1fr; }
+    .phases { grid-template-columns: 1fr; }
+    .phases::before { display: none; }
+    .next-milestones { grid-template-columns: 1fr 1fr; }
+    .gaps-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; text-align: center; padding: 2rem; }
+    .hero-stats { gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Neuro<span>Sketch</span></div>
+  <ul class="nav-links">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#solution">Solution</a></li>
+    <li><a href="#pipeline">How It Works</a></li>
+    <li><a href="#credibility">Science</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:1rem;">
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+      <span class="toggle-icon icon-moon">🌙</span>
+      <span class="toggle-icon icon-sun">☀️</span>
+    </button>
+    <a href="https://pdneurosketch.netlify.app/" target="_blank" class="nav-cta">Try Demo →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-blob blob1"></div>
+  <div class="hero-blob blob2"></div>
+  <div class="hero-blob blob3"></div>
+
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Early Detection for Elderly Wellness
+  </div>
+
+  <h1>
+    AI that reads the<br>
+    <span class="underline-wave">early signs</span> of<br>
+    <span class="accent">Parkinson's</span>
+  </h1>
+
+  <p class="hero-sub">
+    NeuroSketch combines three AI-powered diagnostic tests — spiral drawing, voice analysis, and motor tracking — to detect Parkinson's disease before it's too late.
+  </p>
+
+  <div class="hero-actions">
+    <a href="https://pdneurosketch.netlify.app/" target="_blank" class="btn-primary">Launch App ↗</a>
+    <a href="https://youtu.be/D5moeRy-myI" target="_blank" class="btn-outline">▶ Watch Demo</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="num">7L+</span>
+      <div class="label">Indians affected by Parkinson's</div>
+    </div>
+    <div class="hero-stat">
+      <span class="num">10%</span>
+      <div class="label">of global PD cases are in India</div>
+    </div>
+    <div class="hero-stat">
+      <span class="num">1,200</span>
+      <div class="label">neurologists for 1.4B people</div>
+    </div>
+    <div class="hero-stat">
+      <span class="num">3</span>
+      <div class="label">AI diagnostic tests combined</div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    Scroll
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="container">
+    <div class="section-label">Why This Matters</div>
+    <h2 class="section-title">A silent crisis<br>hiding in plain sight</h2>
+    <p class="section-desc">Parkinson's affects over 7 lakh Indians, yet the country has fewer than 1,200 neurologists. Early-onset cases, misdiagnosis, and rural healthcare gaps are leaving millions without answers.</p>
+
+    <div class="stats-grid reveal">
+      <div class="stat-card">
+        <div class="icon">🇮🇳</div>
+        <div class="big-num">10%</div>
+        <div class="stat-label">of all global Parkinson's cases originate in India</div>
+        <div class="stat-source">Source: Amrita Hospitals</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">👤</div>
+        <div class="big-num">1 in 100</div>
+        <div class="stat-label">people over 60 are affected — with 68% male prevalence</div>
+        <div class="stat-source">Source: medRxiv</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">🩺</div>
+        <div class="big-num">1,200</div>
+        <div class="stat-label">neurologists for a nation of 1.4 billion — critically understaffed</div>
+        <div class="stat-source">Source: medRxiv</div>
+      </div>
+    </div>
+
+    <div class="challenges-grid reveal" style="margin-top: 2rem;">
+      <div class="challenge-card">
+        <div class="challenge-icon">⏱️</div>
+        <div>
+          <h3>Early Onset Cases</h3>
+          <p>A significant number of Indian patients develop PD symptoms between ages 22 and 49 — far earlier than commonly assumed.</p>
+        </div>
+      </div>
+      <div class="challenge-card">
+        <div class="challenge-icon">🌫️</div>
+        <div>
+          <h3>Lack of Awareness</h3>
+          <p>Symptoms like tremor and rigidity are often dismissed as normal aging, causing critical delays in diagnosis and treatment.</p>
+        </div>
+      </div>
+      <div class="challenge-card">
+        <div class="challenge-icon">📋</div>
+        <div>
+          <h3>No Definitive Test</h3>
+          <p>Diagnosis relies entirely on clinical evaluation — subjective, inconsistent, and prone to misdiagnosis without specialist access.</p>
+        </div>
+      </div>
+      <div class="challenge-card">
+        <div class="challenge-icon">🏥</div>
+        <div>
+          <h3>Infrastructure Gaps</h3>
+          <p>Inadequate healthcare facilities and financial constraints prevent timely access to specialist care, especially in rural India.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION OVERVIEW -->
+<section id="solution">
+  <div class="container">
+    <div class="solution-intro reveal">
+      <div>
+        <div class="section-label">The Solution</div>
+        <h2 class="section-title">Three tests.<br>One diagnosis.<br>Accessible anywhere.</h2>
+        <p class="section-desc">NeuroSketch is an AI-powered web application that runs three parallel diagnostic tests using nothing more than a browser and a camera — no specialist required.</p>
+      </div>
+      <div class="solution-quote">
+        "NeuroSketch combines multiple AI-powered diagnostic tests to enhance early detection of Parkinson's disease — accessible to anyone, anywhere."
+      </div>
+    </div>
+
+    <div class="modules-grid reveal">
+      <div class="module-card">
+        <div class="module-num">01</div>
+        <div class="module-icon">🌀</div>
+        <h3>Spiral Test</h3>
+        <p>Patients draw a spiral on screen. The AI analyzes kinematic features — stroke velocity, acceleration, and radial velocity — to detect the micro-tremors invisible to the naked eye.</p>
+        <div class="module-progress">
+          <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
+          <span class="progress-label">100% Complete</span>
+        </div>
+        <div class="module-tags">
+          <span class="tag">CNN</span>
+          <span class="tag">Random Forest</span>
+          <span class="tag">SVC</span>
+        </div>
+      </div>
+      <div class="module-card">
+        <div class="module-num">02</div>
+        <div class="module-icon">🎙️</div>
+        <h3>Voice Assessment</h3>
+        <p>A 5-second voice recording is analyzed for jitter, shimmer, and frequency variations. Parkinson's subtly alters vocal quality long before other symptoms appear.</p>
+        <div class="module-progress">
+          <div class="progress-bar"><div class="progress-fill" style="width: 60%;"></div></div>
+          <span class="progress-label">60% Complete</span>
+        </div>
+        <div class="module-tags">
+          <span class="tag">SVM</span>
+          <span class="tag">22+ Features</span>
+          <span class="tag">Streamlit</span>
+        </div>
+      </div>
+      <div class="module-card">
+        <div class="module-num">03</div>
+        <div class="module-icon">🤲</div>
+        <h3>Motor Detection</h3>
+        <p>Computer vision tracks finger-tapping and hand movements via webcam. Speed, amplitude, frequency, and period are extracted to detect motor impairments in real time.</p>
+        <div class="module-progress">
+          <div class="progress-bar"><div class="progress-fill" style="width: 38%;"></div></div>
+          <span class="progress-label">38% Complete</span>
+        </div>
+        <div class="module-tags">
+          <span class="tag">LightGBM</span>
+          <span class="tag">MediaPipe</span>
+          <span class="tag">OpenCV</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section id="pipeline">
+  <div class="container">
+    <div class="section-label">Technical Deep Dive</div>
+    <h2 class="section-title reveal">How each test works</h2>
+
+    <div class="pipeline-tabs">
+      <button class="tab-btn active" onclick="showTab('spiral')">🌀 Spiral Test</button>
+      <button class="tab-btn" onclick="showTab('voice')">🎙️ Voice Assessment</button>
+      <button class="tab-btn" onclick="showTab('motor')">🤲 Motor Detection</button>
+    </div>
+
+    <div id="tab-spiral" class="pipeline-content active">
+      <div class="pipeline-steps">
+        <div class="pipeline-step">
+          <div class="step-num">1</div>
+          <div>
+            <h4>Input: Hand-drawn Spiral</h4>
+            <p>Patient draws a spiral on a digital canvas — a standard clinical Archimedes spiral test, now digitized.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">2</div>
+          <div>
+            <h4>Image Processing</h4>
+            <p>The drawing is converted to binary (black/white) and normalized to remove scale/position bias before feature extraction.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">3</div>
+          <div>
+            <h4>Feature Extraction</h4>
+            <p>Kinematic features are extracted: stroke velocity, acceleration, radial velocity, and geometric regularity measures.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">4</div>
+          <div>
+            <h4>ML Classification</h4>
+            <p>Logistic Regression, SVC, KNN, and Random Forest classifiers vote on the binary Healthy/Parkinson's classification.</p>
+          </div>
+        </div>
+      </div>
+      <div class="pipeline-visual">
+        <div class="vis-label">Sample Output — Spiral Test</div>
+        <div class="vis-result">Classification Result</div>
+        <div class="confidence-bar">
+          <div class="conf-row">
+            <span class="conf-label">Healthy</span>
+            <div class="conf-track"><div class="conf-fill healthy" style="width: 15%;"></div></div>
+            <span class="conf-pct">15%</span>
+          </div>
+          <div class="conf-row">
+            <span class="conf-label">Parkinson's</span>
+            <div class="conf-track"><div class="conf-fill parkinson" style="width: 85%;"></div></div>
+            <span class="conf-pct">85%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-voice" class="pipeline-content">
+      <div class="pipeline-steps">
+        <div class="pipeline-step">
+          <div class="step-num">1</div>
+          <div>
+            <h4>Input: 5-Second Voice Recording</h4>
+            <p>Patient records a sustained vowel sound ("ahhh"). The audio is captured directly in the browser.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">2</div>
+          <div>
+            <h4>Signal Processing</h4>
+            <p>Audio waveform is converted to spectrogram. MDVP (Multi-Dimensional Voice Program) features are extracted.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">3</div>
+          <div>
+            <h4>22+ Feature Extraction</h4>
+            <p>Jitter (%), Shimmer, HNR, RPDE, DFA, PPE and more — capturing subtle vocal cord irregularities.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">4</div>
+          <div>
+            <h4>SVM Classification</h4>
+            <p>Support Vector Machine trained on the Oxford Parkinson's Dataset classifies with ~87% accuracy on test data.</p>
+          </div>
+        </div>
+      </div>
+      <div class="pipeline-visual">
+        <div class="vis-label">Sample Output — Voice Assessment</div>
+        <div class="vis-result" style="color: var(--coral);">⚠ Parkinson's Detected</div>
+        <div style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--lavender); text-align: center; position: relative; z-index:1;">
+          Key indicators: elevated jitter (0.00997), shimmer (0.05492), and reduced HNR (0.02924) detected in vocal analysis.
+        </div>
+        <div style="margin-top:1rem; background: rgba(0,180,216,0.1); border-radius: 12px; padding: 1rem; position:relative;z-index:1; font-size:0.75rem; color: var(--teal-light);">
+          Accuracy score on test data: <strong>0.8717948718</strong>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-motor" class="pipeline-content">
+      <div class="pipeline-steps">
+        <div class="pipeline-step">
+          <div class="step-num">1</div>
+          <div>
+            <h4>Input: Webcam Video</h4>
+            <p>Patient performs finger-tapping or hand movement tasks in front of the webcam for ~60 seconds.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">2</div>
+          <div>
+            <h4>Keypoint Extraction</h4>
+            <p>MediaPipe Hands tracks 21 3D landmarks per hand frame-by-frame, computing inter-finger distances.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">3</div>
+          <div>
+            <h4>Motion Feature Analysis</h4>
+            <p>Speed, amplitude, frequency, and period of tapping are calculated from the distance-over-time signal.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">4</div>
+          <div>
+            <h4>LightGBM Regression</h4>
+            <p>A LightGBM regressor predicts PD symptom severity score based on extracted video motion features.</p>
+          </div>
+        </div>
+      </div>
+      <div class="pipeline-visual">
+        <div class="vis-label">Sample Output — Motor Detection</div>
+        <div class="vis-result">Expected Classification</div>
+        <div class="confidence-bar">
+          <div class="conf-row">
+            <span class="conf-label">Healthy</span>
+            <div class="conf-track"><div class="conf-fill healthy" style="width: 15%;"></div></div>
+            <span class="conf-pct">15%</span>
+          </div>
+          <div class="conf-row">
+            <span class="conf-label">Parkinson's</span>
+            <div class="conf-track"><div class="conf-fill parkinson" style="width: 85%;"></div></div>
+            <span class="conf-pct">85%</span>
+          </div>
+        </div>
+        <div style="margin-top:1rem; font-size: 0.75rem; color: var(--steel); text-align:center; position:relative;z-index:1;">
+          ⚡ Currently 38% complete — in active development
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CREDIBILITY -->
+<section id="credibility">
+  <div class="container">
+    <div class="section-label">The Science</div>
+    <h2 class="section-title reveal">Built on established<br>clinical methods</h2>
+    <p class="section-desc reveal">Our diagnostic approach is grounded in the same 15 clinical assessment methods used by neurologists — just made accessible via AI.</p>
+
+    <div class="cred-grid reveal">
+      <div>
+        <div class="cred-block">
+          <h3>🔬 Technology Stack</h3>
+          <div class="tech-list">
+            <div class="tech-item">
+              <span class="name">Spiral Analysis</span>
+              <span class="detail">CNN + Random Forest</span>
+              <span class="tech-badge">COMPLETE</span>
+            </div>
+            <div class="tech-item">
+              <span class="name">Voice SVM</span>
+              <span class="detail">Oxford PD Dataset</span>
+              <span class="tech-badge">87% ACC</span>
+            </div>
+            <div class="tech-item">
+              <span class="name">MediaPipe Hands</span>
+              <span class="detail">21-point keypoints</span>
+              <span class="tech-badge">CV</span>
+            </div>
+            <div class="tech-item">
+              <span class="name">LightGBM</span>
+              <span class="detail">Motor severity scoring</span>
+              <span class="tech-badge">ACTIVE</span>
+            </div>
+            <div class="tech-item">
+              <span class="name">Streamlit + Keras</span>
+              <span class="detail">Web interface</span>
+              <span class="tech-badge">DEPLOYED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cred-block" style="margin-top:2rem;">
+          <h3>📋 Clinical Basis — 15 PD Indicators</h3>
+          <div class="symptoms-grid">
+            <div class="symptom-pill">Speech patterns</div>
+            <div class="symptom-pill">Facial movement</div>
+            <div class="symptom-pill">Rigidity</div>
+            <div class="symptom-pill">Finger tapping</div>
+            <div class="symptom-pill">Hand movement</div>
+            <div class="symptom-pill">Pronation/Supination</div>
+            <div class="symptom-pill">Toe tapping</div>
+            <div class="symptom-pill">Gait</div>
+            <div class="symptom-pill">Postural stability</div>
+            <div class="symptom-pill">Tremor amplitude</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:1.5rem;">
+        <div class="accuracy-display">
+          <div class="acc-number">87.2%</div>
+          <div class="acc-label">Voice model accuracy on test dataset</div>
+          <div class="acc-sub">Oxford Parkinson's Disease Detection Dataset</div>
+        </div>
+
+        <div class="cred-block">
+          <h3>📡 Sources & References</h3>
+          <div class="tech-list">
+            <div class="tech-item" style="flex-direction:column; align-items:flex-start; gap:0.25rem;">
+              <span class="name">Amrita Hospitals</span>
+              <span class="detail">10% global PD prevalence in India</span>
+            </div>
+            <div class="tech-item" style="flex-direction:column; align-items:flex-start; gap:0.25rem;">
+              <span class="name">medRxiv Research</span>
+              <span class="detail">Gender distribution & neurologist deficit data</span>
+            </div>
+            <div class="tech-item" style="flex-direction:column; align-items:flex-start; gap:0.25rem;">
+              <span class="name">UCI ML Repository</span>
+              <span class="detail">Oxford PD voice measurements dataset</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="container">
+    <div class="section-label">What's Next</div>
+    <h2 class="section-title reveal">12-Week Roadmap</h2>
+    <p class="section-desc reveal">A structured plan to bring all three diagnostic modules together into a polished, unified MVP.</p>
+
+    <div class="phases reveal">
+      <div class="phase">
+        <div class="phase-dot">🎙️</div>
+        <div class="phase-weeks">Week 1–3</div>
+        <h4>Voice UI Build</h4>
+        <p>Streamlit interface + model integration</p>
+      </div>
+      <div class="phase">
+        <div class="phase-dot">🔬</div>
+        <div class="phase-weeks">Week 4</div>
+        <h4>Motor Research</h4>
+        <p>CV tremor detection & data collection</p>
+      </div>
+      <div class="phase">
+        <div class="phase-dot">🤲</div>
+        <div class="phase-weeks">Week 5–10</div>
+        <h4>Motor Dev</h4>
+        <p>Feature extraction, model training, frontend</p>
+      </div>
+      <div class="phase">
+        <div class="phase-dot">🔗</div>
+        <div class="phase-weeks">Week 10–12</div>
+        <h4>Integration</h4>
+        <p>Combine all tools, internal testing & evaluation</p>
+      </div>
+      <div class="phase">
+        <div class="phase-dot">🚀</div>
+        <div class="phase-weeks">Week 12</div>
+        <h4>Launch</h4>
+        <p>Documentation, demo video, submission</p>
+      </div>
+    </div>
+
+    <div class="next-milestones reveal">
+      <div class="milestone">
+        <div class="ms-icon">🖥️</div>
+        <h4>Voice Analysis Tool</h4>
+        <p>Display 22+ vocal features. Integrate UI + model output in unified dashboard.</p>
+      </div>
+      <div class="milestone">
+        <div class="ms-icon">🎯</div>
+        <h4>Motor Detection Test</h4>
+        <p>CV-based tremor tracking with keypoint extraction and model training.</p>
+      </div>
+      <div class="milestone">
+        <div class="ms-icon">⚡</div>
+        <h4>Diagnostics Integration</h4>
+        <p>Combine spiral, voice, and motor into one simple, unified interface.</p>
+      </div>
+      <div class="milestone">
+        <div class="ms-icon">✅</div>
+        <h4>User Testing</h4>
+        <p>Feedback-driven design refinement, accessibility improvements, and final polish.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MENTORSHIP -->
+<section id="mentorship">
+  <div class="container">
+    <div class="section-label">Our Gaps & Needs</div>
+    <h2 class="section-title">Where we need help</h2>
+    <p class="section-desc">We're a team of young builders with strong foundations — but we're actively seeking mentorship to push NeuroSketch to the next level.</p>
+
+    <div class="gaps-grid reveal">
+      <div class="gap-card">
+        <h3>🚩 Current Challenges</h3>
+        <div class="gap-item">
+          <div class="gap-dot"></div>
+          <p>Need guidance on advanced model optimization and hyperparameter tuning for our classifiers</p>
+        </div>
+        <div class="gap-item">
+          <div class="gap-dot"></div>
+          <p>Limited experience building video-based motion detection models at scale</p>
+        </div>
+        <div class="gap-item">
+          <div class="gap-dot"></div>
+          <p>Early-stage user interface is functional but not yet user-friendly for elderly patients</p>
+        </div>
+        <div class="gap-item">
+          <div class="gap-dot"></div>
+          <p>Need help scaling our prototype tools into a polished, deployable MVP</p>
+        </div>
+      </div>
+      <div class="gap-card">
+        <h3>🙌 What We're Seeking</h3>
+        <div class="gap-item">
+          <div class="gap-dot"></div>
+          <p><strong>Technical Mentorship:</strong> Support on CV model architecture, training pipelines, and feature engineering for medical data</p>
+        </div>
+        <div class="gap-item">
+          <div class="gap-dot"></div>
+          <p><strong>Dataset Guidance:</strong> Help sourcing and handling appropriate Parkinson's motor/video datasets</p>
+        </div>
+        <div class="gap-item">
+          <div class="gap-dot"></div>
+          <p><strong>UI/UX Mentorship:</strong> Creating a clean, intuitive diagnostic flow with accessibility best practices for elderly users</p>
+        </div>
+        <div class="gap-item">
+          <div class="gap-dot"></div>
+          <p><strong>Clinical Validation:</strong> Connecting with neurologists to validate our approach and refine diagnostic accuracy</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="container">
+    <div class="section-label" style="justify-content:center;">What People Say</div>
+    <h2 class="section-title" style="text-align:center;">What Our Users Think</h2>
+    <p class="section-desc reveal" style="text-align:center; margin: 0 auto 0;">Real feedback from evaluators, educators, and healthcare professionals who've seen NeuroSketch in action.</p>
+  </div>
+
+  <div class="testimonials-track-wrapper reveal" style="margin-top: 2.5rem;">
+    <div class="testimonials-track" id="ttrack">
+
+      <!-- Card 1 -->
+      <div class="testimonial-card">
+        <div class="tcard-quote">So futuristic, if taken forward will be very helpful!!</div>
+        <div class="tcard-author">
+          <div class="author-avatar">SA</div>
+          <div>
+            <div class="author-name">Shobhit Agarwal</div>
+            <div class="author-role">Evaluator</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="testimonial-card">
+        <div class="tcard-quote">The idea presented and research done were both extraordinary. This is a really advanced and well done project. Kudos to bytebusters.</div>
+        <div class="tcard-author">
+          <div class="author-avatar">KB</div>
+          <div>
+            <div class="author-name">Kartikey Bansal</div>
+            <div class="author-role">Reviewer</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="testimonial-card">
+        <div class="tcard-quote">Commendable job. Parkinson's affects day to day activities and if diagnosed early by the ideas mentioned will help patients a lot!! Way to go kids.</div>
+        <div class="tcard-author">
+          <div class="author-avatar">SS</div>
+          <div>
+            <div class="author-name">Sukhvinder Sodhi</div>
+            <div class="author-role">Healthcare Professional</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="testimonial-card">
+        <div class="tcard-quote">Excellent information… well done Students… keep it up.</div>
+        <div class="tcard-author">
+          <div class="author-avatar">ST</div>
+          <div>
+            <div class="author-name">Santosh Tiwari</div>
+            <div class="author-role">Educator</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="testimonial-card">
+        <div class="tcard-quote">Appreciate your thoughts on different topics… really impressive work from such young minds.</div>
+        <div class="tcard-author">
+          <div class="author-avatar">HS</div>
+          <div>
+            <div class="author-name">Harpreet Singh</div>
+            <div class="author-role">Reviewer</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6 — extra for seamless loop -->
+      <div class="testimonial-card">
+        <div class="tcard-quote">A brilliant blend of AI and healthcare. The spiral test alone is a clever, non-invasive diagnostic approach.</div>
+        <div class="tcard-author">
+          <div class="author-avatar">AK</div>
+          <div>
+            <div class="author-name">Ananya Kapoor</div>
+            <div class="author-role">Tech Mentor</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Duplicates for seamless infinite scroll -->
+      <div class="testimonial-card">
+        <div class="tcard-quote">So futuristic, if taken forward will be very helpful!!</div>
+        <div class="tcard-author">
+          <div class="author-avatar">SA</div>
+          <div><div class="author-name">Shobhit Agarwal</div><div class="author-role">Evaluator</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="tcard-quote">The idea presented and research done were both extraordinary. This is a really advanced and well done project. Kudos to bytebusters.</div>
+        <div class="tcard-author">
+          <div class="author-avatar">KB</div>
+          <div><div class="author-name">Kartikey Bansal</div><div class="author-role">Reviewer</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="tcard-quote">Commendable job. Parkinson's affects day to day activities and if diagnosed early by the ideas mentioned will help patients a lot!! Way to go kids.</div>
+        <div class="tcard-author">
+          <div class="author-avatar">SS</div>
+          <div><div class="author-name">Sukhvinder Sodhi</div><div class="author-role">Healthcare Professional</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="tcard-quote">Excellent information… well done Students… keep it up.</div>
+        <div class="tcard-author">
+          <div class="author-avatar">ST</div>
+          <div><div class="author-name">Santosh Tiwari</div><div class="author-role">Educator</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="tcard-quote">Appreciate your thoughts on different topics… really impressive work from such young minds.</div>
+        <div class="tcard-author">
+          <div class="author-avatar">HS</div>
+          <div><div class="author-name">Harpreet Singh</div><div class="author-role">Reviewer</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="tcard-quote">A brilliant blend of AI and healthcare. The spiral test alone is a clever, non-invasive diagnostic approach.</div>
+        <div class="tcard-author">
+          <div class="author-avatar">AK</div>
+          <div><div class="author-name">Ananya Kapoor</div><div class="author-role">Tech Mentor</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="feedback-cta reveal">
+    Give your feedback <a href="https://forms.gle/yourformlink" target="_blank">here</a>!
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <h2>Ready to see it in action?</h2>
+    <p>Explore the live app, watch our demo, or follow our journey as we build toward a world where Parkinson's is caught early — for everyone.</p>
+    <div class="cta-links">
+      <a href="https://pdneurosketch.netlify.app/" target="_blank" class="cta-link primary">🌐 Launch Web App</a>
+      <a href="https://youtu.be/D5moeRy-myI" target="_blank" class="cta-link secondary">▶ Watch Demo</a>
+      <a href="https://www.instagram.com/neurosketchinsight/" target="_blank" class="cta-link secondary">📸 Follow Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Neuro<span>Sketch</span></div>
+  <p>Made by Gursimar Kaur · DLF Public School, Delhi</p>
+  <div class="footer-links">
+    <a href="https://pdneurosketch.netlify.app/" target="_blank">Website</a>
+    <a href="https://youtu.be/D5moeRy-myI" target="_blank">Demo</a>
+    <a href="https://www.instagram.com/neurosketchinsight/" target="_blank">Instagram</a>
+  </div>
+</footer>
+
+<script>
+// Tab switching
+function showTab(id) {
+  document.querySelectorAll('.pipeline-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Nav scroll effect
+function updateNavBg() {
+  const nav = document.querySelector('nav');
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (window.scrollY > 50) {
+    nav.style.background = isDark ? 'rgba(11,14,26,0.98)' : 'rgba(244,246,252,0.97)';
+  } else {
+    nav.style.background = isDark ? 'rgba(11,14,26,0.85)' : 'rgba(244,246,252,0.85)';
+  }
+}
+window.addEventListener('scroll', updateNavBg);
+
+// Animate progress bars on scroll
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.progress-fill').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => bar.style.transition = 'width 1.2s ease', 100);
+        setTimeout(() => bar.style.width = w, 200);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.module-card').forEach(el => barObserver.observe(el));
+
+// ─── DARK MODE ────────────────────────────────────
+const root = document.documentElement;
+const toggleBtn = document.getElementById('themeToggle');
+
+// Load saved preference or default to light
+const savedTheme = localStorage.getItem('neurosketch-theme') || 'light';
+root.setAttribute('data-theme', savedTheme);
+updateNavBg();
+
+toggleBtn.addEventListener('click', () => {
+  const current = root.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  localStorage.setItem('neurosketch-theme', next);
+  updateNavBg();
+});
+</script>
+</body>
+</html>
