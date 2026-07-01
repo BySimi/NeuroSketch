@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import math
 import time
+import av
 import matplotlib.pyplot as plt
 
 # Initialize mediapipe hands module
@@ -48,70 +49,74 @@ def calculate_distance(point1, point2):
         return -1
 
 
-def run_assessment(capture_duration=20):
+class FingerTapProcessor:
     """
-    Generator that processes the webcam feed, collects data,
-    and yields frames back to the UI to avoid cv2.imshow().
+    WebRTC Video Processor that acts as the callback for incoming browser frames.
+    Replaces the cv2.VideoCapture while maintaining the exact data collection logic.
     """
-    cap = cv2.VideoCapture(0)
 
-    times = []
-    distances = []
+    def __init__(self):
+        self.times = []
+        self.distances = []
+        self.start_time = None
+        self.capture_duration = 20
 
-    start_time = time.time()
-    end_time = start_time + capture_duration
+    def recv(self, frame):
+        # Convert incoming WebRTC frame to OpenCV BGR format
+        img = frame.to_ndarray(format="bgr24")
 
-    while cap.isOpened() and time.time() < end_time:
-        ret, frame = cap.read()
-        if not ret:
-            break
+        # Initialize start time on the very first frame
+        if self.start_time is None:
+            self.start_time = time.time()
 
-        # Detect finger landmarks
-        frame, thumb, index = detect_finger_landmarks(frame)
+        current_time = time.time() - self.start_time
 
-        # Calculate distance between thumb and index finger
-        distance = calculate_distance(thumb, index)
+        # Process frame and record data ONLY within the capture duration
+        if current_time <= self.capture_duration:
+            img, thumb, index = detect_finger_landmarks(img)
+            distance = calculate_distance(thumb, index)
 
-        # Record current time
-        current_time = time.time() - start_time
+            self.times.append(current_time)
+            self.distances.append(distance)
 
-        # Append time and distance data to lists
-        times.append(current_time)
-        distances.append(distance)
+            # Display information on the frame exactly as before
+            remaining_time = max(0, int(self.capture_duration - current_time))
+            cv2.putText(
+                img,
+                f"Distance: {distance:.2f} pixels",
+                (50, 50),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (255, 255, 255),
+                2,
+            )
+            cv2.putText(
+                img,
+                f"Time Left: {remaining_time} s",
+                (50, 100),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (255, 255, 255),
+                2,
+            )
+        else:
+            # Indicate completion on the final frames before shutdown
+            cv2.putText(
+                img,
+                "Assessment Complete.",
+                (50, 50),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (0, 255, 0),
+                2,
+            )
 
-        # Display information on the frame exactly as before
-        cv2.putText(
-            frame,
-            f"Distance: {distance:.2f} pixels",
-            (50, 50),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            1,
-            (255, 255, 255),
-            2,
-        )
-
-        remaining_time = int(end_time - time.time())
-        cv2.putText(
-            frame,
-            f"Time Left: {remaining_time} s",
-            (50, 100),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            1,
-            (255, 255, 255),
-            2,
-        )
-
-        # Convert frame from BGR to RGB for Streamlit rendering
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-        # Yield the current state to the UI instead of blocking
-        yield frame_rgb, remaining_time, times, distances
-
-    cap.release()
+        # Return processed frame back to the browser
+        return av.VideoFrame.from_ndarray(img, format="bgr24")
 
 
 def generate_graph(times, distances):
-    """Generates the matplotlib figure to be passed to st.pyplot() instead of plt.show()."""
+    """Generates the matplotlib figure."""
     fig, ax = plt.subplots()
     ax.plot(times, distances)
     ax.set_title("Change in Distance over Time")
