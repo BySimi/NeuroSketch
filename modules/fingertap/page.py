@@ -85,7 +85,15 @@ from modules.fingertap.detector import FingerTapProcessor, generate_graph
 #     st.pyplot(fig)
 
 
-def show():
-    st.title("Finger Tapping")
+import streamlit as st
+from streamlit_webrtc import webrtc_streamer, WebRtcMode
 
-    st.success("Finger page loaded successfully.")
+
+def show():
+    st.title("Finger Test")
+
+    webrtc_streamer(
+        key="test",
+        mode=WebRtcMode.SENDRECV,
+        media_stream_constraints={"video": True, "audio": False},
+    )
