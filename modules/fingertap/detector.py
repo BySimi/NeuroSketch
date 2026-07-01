@@ -3,20 +3,26 @@ import mediapipe as mp
 import math
 import time
 import av
+import streamlit as st
 from matplotlib.figure import Figure
 
-# Initialize mediapipe hands module
-mp_hands = mp.solutions.hands
-hands = mp_hands.Hands(
-    static_image_mode=False,
-    max_num_hands=2,
-    min_detection_confidence=0.5,
-    min_tracking_confidence=0.5,
-)
+
+# Cache the MediaPipe model so it isn't repeatedly reloaded in memory
+@st.cache_resource
+def get_mediapipe_hands():
+    mp_hands = mp.solutions.hands
+    return mp_hands.Hands(
+        static_image_mode=False,
+        max_num_hands=2,
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5,
+    )
 
 
 def detect_finger_landmarks(image):
     """Detects index finger and thumb landmarks exactly as in the prototype."""
+    hands = get_mediapipe_hands()
+
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = hands.process(image_rgb)
     thumb_point = None
@@ -51,8 +57,7 @@ def calculate_distance(point1, point2):
 
 class FingerTapProcessor:
     """
-    WebRTC Video Processor that acts as the callback for incoming browser frames.
-    Replaces the cv2.VideoCapture while maintaining the exact data collection logic.
+    Optimized WebRTC Video Processor.
     """
 
     def __init__(self):
@@ -60,10 +65,18 @@ class FingerTapProcessor:
         self.distances = []
         self.start_time = None
         self.capture_duration = 20
+        self.finished = False
+
+        # State tracking for frame skipping optimization
+        self.frame_count = 0
+        self.last_thumb = None
+        self.last_index = None
+        self.last_distance = -1
 
     def recv(self, frame):
         # Convert incoming WebRTC frame to OpenCV BGR format
         img = frame.to_ndarray(format="bgr24")
+        self.frame_count += 1
 
         # Initialize start time on the very first frame
         if self.start_time is None:
@@ -73,17 +86,30 @@ class FingerTapProcessor:
 
         # Process frame and record data ONLY within the capture duration
         if current_time <= self.capture_duration:
-            img, thumb, index = detect_finger_landmarks(img)
-            distance = calculate_distance(thumb, index)
 
-            self.times.append(current_time)
-            self.distances.append(distance)
+            # OPTIMIZATION: Run heavy MediaPipe detection every second frame
+            if self.frame_count % 2 != 0:
+                img, thumb, index = detect_finger_landmarks(img)
+                distance = calculate_distance(thumb, index)
+
+                self.last_thumb = thumb
+                self.last_index = index
+                self.last_distance = distance
+
+                self.times.append(current_time)
+                self.distances.append(distance)
+            else:
+                # On skipped frames, draw the last known dots so the UI doesn't flicker
+                if self.last_index:
+                    cv2.circle(img, self.last_index, 10, (255, 0, 0), cv2.FILLED)
+                if self.last_thumb:
+                    cv2.circle(img, self.last_thumb, 10, (0, 255, 0), cv2.FILLED)
 
             # Display information on the frame exactly as before
             remaining_time = max(0, int(self.capture_duration - current_time))
             cv2.putText(
                 img,
-                f"Distance: {distance:.2f} pixels",
+                f"Distance: {self.last_distance:.2f} pixels",
                 (50, 50),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 1,
@@ -99,8 +125,10 @@ class FingerTapProcessor:
                 (255, 255, 255),
                 2,
             )
+
         else:
-            # Indicate completion on the final frames before shutdown
+            # Set the flag to true so the Streamlit UI can poll it instantly
+            self.finished = True
             cv2.putText(
                 img,
                 "Assessment Complete.",
