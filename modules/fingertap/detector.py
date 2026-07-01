@@ -3,7 +3,7 @@ import mediapipe as mp
 import math
 import time
 import av
-import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 
 # Initialize mediapipe hands module
 mp_hands = mp.solutions.hands
@@ -116,9 +116,25 @@ class FingerTapProcessor:
 
 
 def generate_graph(times, distances):
-    """Generates the matplotlib figure."""
-    fig, ax = plt.subplots()
-    ax.plot(times, distances)
+    """
+    Generates a thread-safe matplotlib figure using the Object-Oriented API.
+    Prevents Streamlit "Invalid image width: 0" frontend crashes.
+    """
+    fig = Figure()
+    ax = fig.subplots()
+
+    # Failsafe: if the camera didn't record data, prevent plotting a 0x0 empty bounding box
+    if not times or not distances:
+        ax.text(
+            0.5,
+            0.5,
+            "No tracking data recorded.",
+            horizontalalignment="center",
+            verticalalignment="center",
+        )
+    else:
+        ax.plot(times, distances)
+
     ax.set_title("Change in Distance over Time")
     ax.set_xlabel("Time (seconds)")
     ax.set_ylabel("Distance (pixels)")

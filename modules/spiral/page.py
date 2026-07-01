@@ -67,11 +67,11 @@ def show():
     )
 
     # Display preview of the sketch
-    st.subheader("Preview")
-    if canvas_image.image_data is not None:
-        input_numpy_array = np.array(canvas_image.image_data)
-        input_image = Image.fromarray(input_numpy_array.astype("uint8"), "RGBA")
-        st.image(input_image, use_column_width=True)
+    # st.subheader("Preview")
+    # if canvas_image.image_data is not None:
+    #     input_numpy_array = np.array(canvas_image.image_data)
+    #     input_image = Image.fromarray(input_numpy_array.astype("uint8"), "RGBA")
+    #     st.image(input_image, use_column_width=True)
 
     # Predict Parkinson's disease on button click
     submit = st.button(label="Submit Sketch")

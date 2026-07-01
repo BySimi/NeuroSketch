@@ -52,7 +52,6 @@ def show():
             desired_playing_state=True,
             video_processor_factory=FingerTapProcessor,
             media_stream_constraints={"video": True, "audio": False},
-            # STUN server configuration is required for Streamlit Cloud to negotiate the video feed
             rtc_configuration={
                 "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
             },
