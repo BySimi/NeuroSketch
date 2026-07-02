@@ -94,7 +94,6 @@ Clinical prediction using finger tapping data has not yet been implemented.
             video_processor_factory=FingerTapProcessor,
             media_stream_constraints={"video": True, "audio": False},
             rtc_configuration={"iceServers": get_ice_servers()},
-            async_processing=True,
         )
 
         # Main Thread Synchronization: Non-blocking polling
