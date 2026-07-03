@@ -209,46 +209,70 @@ elif st.session_state.step == 2:
 # FINGER TAPPING
 # ==========================================================
 
+# elif st.session_state.step == 3:
+
+#     from modules.fingertap.page import show
+
+#     show()
+
+#     st.divider()
+
+#     col1, col2, col3 = st.columns(3)
+
+#     with col1:
+
+#         if st.button(
+#             "⬅ Back",
+#             use_container_width=True,
+#             key="finger_back",
+#         ):
+#             previous_step()
+#             st.rerun()
+
+#     with col2:
+
+#         if st.button(
+#             "Finish ➜",
+#             disabled=not st.session_state.fingertap_completed,
+#             use_container_width=True,
+#             key="finger_finish",
+#         ):
+#             next_step()
+#             st.rerun()
+
+#     with col3:
+
+#         if st.button(
+#             "Skip",
+#             use_container_width=True,
+#             key="finger_skip",
+#         ):
+#             st.session_state.results["fingertap"] = "Skipped"
+#             st.session_state.fingertap_completed = True
+#             next_step()
+#             st.rerun()
 elif st.session_state.step == 3:
 
-    from modules.fingertap.page import show
-
-    show()
+    fingertap_page()
 
     st.divider()
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-
-        if st.button(
-            "⬅ Back",
-            use_container_width=True,
-            key="finger_back",
-        ):
+        if st.button("⬅ Back", use_container_width=True):
             previous_step()
             st.rerun()
 
     with col2:
-
-        if st.button(
-            "Finish ➜",
-            disabled=not st.session_state.fingertap_completed,
+        st.button(
+            "Next ➜",
+            disabled=True,
             use_container_width=True,
-            key="finger_finish",
-        ):
-            next_step()
-            st.rerun()
+        )
 
     with col3:
-
-        if st.button(
-            "Skip",
-            use_container_width=True,
-            key="finger_skip",
-        ):
-            st.session_state.results["fingertap"] = "Skipped"
-            st.session_state.fingertap_completed = True
+        if st.button("Skip", use_container_width=True):
             next_step()
             st.rerun()
 
