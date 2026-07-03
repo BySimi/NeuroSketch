@@ -91,11 +91,11 @@ if st.session_state.step == 0:
         """
 ## Prototype Disclaimer
 
-NeuroSketch is an AI-assisted Parkinson's screening application designed to analyze digital biomarkers from handwriting, voice, and motor assessments.
+NeuroSketch is an AI-assisted Parkinson's screening application designed to analyze digital biomarkers from handwriting, voice, and motor assessments.\n\n
 
--This application is intended for screening purposes only.
--It does not provide a medical diagnosis.
--Results should be interpreted alongside professional clinical evaluation.
+-This application is intended for screening purposes only.\n
+-It does not provide a medical diagnosis.\n
+-Results should be interpreted alongside professional clinical evaluation.\n
 -If you experience symptoms of Parkinson's disease, consult a qualified healthcare professional.
 """
     )
