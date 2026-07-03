@@ -252,8 +252,9 @@ elif st.session_state.step == 2:
 #             next_step()
 #             st.rerun()
 elif st.session_state.step == 3:
+    from modules.fingertap.page import show
 
-    fingertap_page()
+    show()
 
     st.divider()
 
